@@ -18,7 +18,8 @@ namespace DuplicateFilesInFolders
         private string result;
         private string currentFolder;
         private int numberOfFiles;
-        private int proceededFiles;
+        private int processedFiles;
+        private readonly string separation = "---------------------";
 
         public Form1()
         {
@@ -37,7 +38,7 @@ namespace DuplicateFilesInFolders
             cancelAsyncButton.Enabled = true;
             currentFolder = "";
             numberOfFiles = 0;
-            proceededFiles = 0;
+            processedFiles = 0;
             repertoires = richTextBoxFolderPaths.Lines;
             if (backgroundWorker1.IsBusy != true)
             {
@@ -91,7 +92,7 @@ namespace DuplicateFilesInFolders
                     }
                     Fichier fichier = new Fichier(getLastElementOfPath(file), folder, getLastElementOfPath(folder), calculateMD5(file));
                     allFiles.Add(fichier);
-                    proceededFiles = allFiles.Count();
+                    processedFiles = allFiles.Count();
                     result += fichier.nom + Environment.NewLine;
 
                     i++;
@@ -101,8 +102,7 @@ namespace DuplicateFilesInFolders
                 result += Environment.NewLine + Environment.NewLine;
             }
 
-            result += "---------------------" + Environment.NewLine + "Duplicates" +
-                Environment.NewLine + "---------------------" + Environment.NewLine + Environment.NewLine;
+            result += separation + Environment.NewLine + "Duplicates" + Environment.NewLine + separation + Environment.NewLine + Environment.NewLine;
 
             worker.ReportProgress(CHECK_DUPLICATES);
 
@@ -120,7 +120,7 @@ namespace DuplicateFilesInFolders
                     result += "del \"" + dupe.repertoire + Path.DirectorySeparatorChar + dupe.nom + "\"" + Environment.NewLine;
                 } else
                 {
-                    result += "#Duplication of \"" + dupe.repertoire + Path.DirectorySeparatorChar + dupe.nom + "\"" + Environment.NewLine;
+                    result += "REM Duplication of \"" + dupe.repertoire + Path.DirectorySeparatorChar + dupe.nom + "\"" + Environment.NewLine;
                 } 
                 index++;
             }
@@ -135,7 +135,7 @@ namespace DuplicateFilesInFolders
         {
             if(e.ProgressPercentage >= 0)
             {
-                resultLabel.Text = ("Item proceeded: " + proceededFiles + "/" + numberOfFiles + " (" + (proceededFiles * 100) / numberOfFiles + "%)" +
+                resultLabel.Text = ("Files processed: " + processedFiles + "/" + numberOfFiles + " (" + (processedFiles * 100) / numberOfFiles + "%)" +
                     "\r\n" + "Current folder: " + currentFolder + " (" + e.ProgressPercentage.ToString() + "%)");
             } else if (e.ProgressPercentage == LOADING)
             {
