@@ -109,7 +109,6 @@ namespace DuplicateFilesInFolders
                                 group c by c.hash into g
                                 where g.Skip(1).Any()
                                 from c in g
-                                orderby c.directory, c.name
                                 select c;
 
             int index = 0;
