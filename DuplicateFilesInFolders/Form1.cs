@@ -14,7 +14,7 @@ namespace DuplicateFilesInFolders
     {
         private const int LOADING = -1;
         private const int CHECK_DUPLICATES = -2;
-        private string[] repertoires;
+        private string[] directories;
         private string result;
         private string currentFolder;
         private int numberOfFiles;
@@ -39,7 +39,7 @@ namespace DuplicateFilesInFolders
             currentFolder = "";
             numberOfFiles = 0;
             processedFiles = 0;
-            repertoires = richTextBoxFolderPaths.Lines;
+            directories = richTextBoxFolderPaths.Lines;
             if (backgroundWorker1.IsBusy != true)
             {
                 // Start the asynchronous operation.
@@ -55,11 +55,11 @@ namespace DuplicateFilesInFolders
 
             worker.ReportProgress(LOADING);
             result = "";
-            List<Fichier> allFiles = new List<Fichier>();
+            List<FilePOCO> allFiles = new List<FilePOCO>();
             List<string> allDirs = new List<string>();
 
             //each folder
-            foreach (string baseFolder in repertoires)
+            foreach (string baseFolder in directories)
             {
                 if (!string.IsNullOrWhiteSpace(baseFolder))
                 {
@@ -90,13 +90,12 @@ namespace DuplicateFilesInFolders
                         e.Cancel = true;
                         break;
                     }
-                    Fichier fichier = new Fichier(getLastElementOfPath(file), folder, getLastElementOfPath(folder), calculateMD5(file));
+                    FilePOCO fichier = new FilePOCO(getLastElementOfPath(file), folder, calculateMD5(file));
                     allFiles.Add(fichier);
                     processedFiles = allFiles.Count();
-                    result += fichier.nom + Environment.NewLine;
+                    result += fichier.name + Environment.NewLine;
 
                     i++;
-                    //resultLabel.Text = "Folder " + fichier.repertoireCourt + " - " + ((i * 1.0) / files.Count()).ToString("P1", CultureInfo.InvariantCulture);
                     worker.ReportProgress((i * 100) / files.Count());
                 }
                 result += Environment.NewLine + Environment.NewLine;
@@ -110,19 +109,22 @@ namespace DuplicateFilesInFolders
                                 group c by c.hash into g
                                 where g.Skip(1).Any()
                                 from c in g
+                                orderby c.directory, c.name
                                 select c;
 
             int index = 0;
-            foreach (Fichier dupe in duplicates)
+            string lastHash = "";
+            foreach (FilePOCO dupe in duplicates)
             {
-                if (index % 2 == 0)
+                if (lastHash.Equals(dupe.hash))
                 {
-                    result += "del \"" + dupe.repertoire + Path.DirectorySeparatorChar + dupe.nom + "\"" + Environment.NewLine;
+                    result += "del \"" + dupe.directory + Path.DirectorySeparatorChar + dupe.name + "\"" + Environment.NewLine;
                 } else
                 {
-                    result += "REM Duplication of \"" + dupe.repertoire + Path.DirectorySeparatorChar + dupe.nom + "\"" + Environment.NewLine;
+                    result += "REM Duplication of \"" + dupe.directory + Path.DirectorySeparatorChar + dupe.name + "\"" + Environment.NewLine;
                 } 
                 index++;
+                lastHash = dupe.hash;
             }
 
             string output = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + "DuplicateFilesInFolders-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".txt";
