@@ -1,9 +1,7 @@
-# What is it ?
+# Find and delete duplicate files from one or more directories
 
-Got pictures (or any type of files) on different drives but can't figure out which ones are duplicates ?  
-Got duplicate files in the same (or not) folder but can't find them as they aren't named identically ?
-
-This **Windows** tool aims to verify the **MD5 checksum** of every files from the directories you give as input **(BEWARE: it also checks every subdirectories of given directories)**, and produce a report indicating :
+This ***Windows*** tool verifies the ***MD5 checksum*** of every files from the directories (**and their subdirectories!**) you give as input.<br/><br/>
+It will produce a .txt report indicating :
 - Every files analysed
 - Every duplicates found with :
   - one line formatted as "REM" (= remark) statement for CMD, it's purpose is to indicate that this file is duplicated by the file(s) below. That one won't be deleted
@@ -31,6 +29,10 @@ The deletion can be done by pasting the whole statements into [CMD](https://en.w
 
 ![DuplicateFilesInFolders](doc/deletion.png)  
 *The folder(s) is/are cleaned from duplications*
+
+# Download
+
+Please visit the [release](https://github.com/a-blondel/DuplicateFilesInFolders/releases/) page.
 
 # License
 
